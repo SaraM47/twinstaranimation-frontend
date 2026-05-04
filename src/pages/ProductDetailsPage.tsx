@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getProductById, getProducts } from "../api/endpoints/products.api";
 import { useState, useRef } from "react";
@@ -114,14 +114,15 @@ export default function ProductDetailsPage() {
               >
                 <span className="font-heading text-lg">Description</span>
 
-                <div
-                  className={`w-10 h-10 bg-white flex items-center justify-center transition-transform duration-300 ${
-                    open ? "rotate-0" : "rotate-45"
-                  }`}
-                >
-                  <span className="text-black text-2xl font-bold">
-                    {open ? "−" : "+"}
-                  </span>
+                {/* Icon */}
+                <div className="w-10 h-10 bg-white flex items-center justify-center">
+                  <Plus
+                    className={`
+                      text-black w-6 h-6
+                      transition-transform duration-300
+                      ${open ? "rotate-45" : "rotate-0"}
+                    `}
+                  />
                 </div>
               </button>
 
@@ -182,7 +183,7 @@ export default function ProductDetailsPage() {
             onClick={scrollRight}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-black text-6xl hover:scale-110 transition"
           >
-            <ChevronRight size={56} strokeWidth={3} />{" "}
+            <ChevronRight size={56} strokeWidth={3} />
           </button>
         </div>
       </div>
