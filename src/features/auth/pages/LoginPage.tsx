@@ -4,6 +4,7 @@ import { api } from "../../../api/client";
 import { useAuthStore } from "../store/auth.store";
 import PublicHeader from "../../../components/layout/PublicHeader";
 import Footer from "../../../components/layout/Footer";
+import { XCircle } from "lucide-react";
 
 // Login page with role-based redirect after authentication
 
@@ -12,40 +13,55 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Validation state
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
   const navigate = useNavigate();
   const initializeAuth = useAuthStore((s) => s.initializeAuth);
 
+  // Validate inputs
+  const validate = () => {
+    const newErrors: typeof errors = {};
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    }
+
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Handles login request and redirects user based on role
   const handleLogin = async () => {
-    try {
-      // Send login request
-      await api.post("/Auth/login", {
-        email,
-        password,
-      });
+    if (!validate()) return;
 
-      // Fetch user data after login (important for HttpOnly cookies)
+    try {
+      await api.post("/Auth/login", { email, password });
+
       await initializeAuth();
 
       const user = useAuthStore.getState().user;
 
-      if (!user) {
-        throw new Error("User not found after login");
-      }
+      if (!user) throw new Error("User not found after login");
 
-      // Role-based routing
       if (user.roles.includes("Creator")) {
         navigate("/creator/dashboard", { replace: true });
       } else {
         navigate("/orders", { replace: true });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Login failed");
+
+      setErrors({
+        email: "Invalid email or password",
+      });
     }
   };
 
-  // UI with form and links to registration and password reset
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       <PublicHeader purple />
@@ -61,26 +77,46 @@ export default function LoginPage() {
             }}
             className="space-y-5"
           >
+            {/* Email */}
             <div>
               <label className="text-sm">Email</label>
+
               <input
                 type="email"
-                required
-                className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.email ? "border-red-500" : "border-transparent"
+                }`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+
+              {errors.email && (
+                <div className="flex items-center gap-2 text-red-500 mt-2 text-sm">
+                  <XCircle size={16} />
+                  <span>{errors.email}</span>
+                </div>
+              )}
             </div>
 
+            {/* Password */}
             <div>
               <label className="text-sm">Password</label>
+
               <input
                 type="password"
-                required
-                className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.password ? "border-red-500" : "border-transparent"
+                }`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
+              {errors.password && (
+                <div className="flex items-center gap-2 text-red-500 mt-2 text-sm">
+                  <XCircle size={16} />
+                  <span>{errors.password}</span>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between items-center pt-4">

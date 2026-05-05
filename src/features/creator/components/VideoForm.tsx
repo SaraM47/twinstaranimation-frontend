@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { VideoItem } from "../types";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 // Props definition for VideoForm component, which can be used for both creating and editing video items. It accepts optional seriesId and episodeId for associating the video with a specific series or episode, initial values for pre-filling the form when editing, an onSubmit function that handles form submission, and a submitLabel for the submit button text.
 type Props = {
@@ -31,8 +32,26 @@ export default function VideoForm({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { errors, validate } = useFormValidation<{
+    title: string;
+    videoUrl: string;
+    sortOrder: string;
+  }>();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = validate(
+      { title, videoUrl, sortOrder },
+      {
+        title: (v) => (!v ? "Title is required" : null),
+        videoUrl: (v) => (!v ? "Video URL is required" : null),
+        sortOrder: (v) => (!v ? "Sort order is required" : null),
+      }
+    );
+
+    if (!isValid) return;
+
     setIsSubmitting(true);
 
     try {
@@ -57,10 +76,15 @@ export default function VideoForm({
         </label>
         <input
           id="video-title"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg ${
+            errors.title ? "border-red-500" : "border-gray-200"
+          }`}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        {errors.title && (
+          <p className="text-sm text-red-500 mt-1">{errors.title}</p>
+        )}
       </div>
 
       <div>
@@ -69,10 +93,15 @@ export default function VideoForm({
         </label>
         <input
           id="video-url"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg ${
+            errors.videoUrl ? "border-red-500" : "border-gray-200"
+          }`}
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
         />
+        {errors.videoUrl && (
+          <p className="text-sm text-red-500 mt-1">{errors.videoUrl}</p>
+        )}
       </div>
 
       <div>
@@ -82,10 +111,15 @@ export default function VideoForm({
         <input
           id="video-sort-order"
           type="number"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg ${
+            errors.sortOrder ? "border-red-500" : "border-gray-200"
+          }`}
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         />
+        {errors.sortOrder && (
+          <p className="text-sm text-red-500 mt-1">{errors.sortOrder}</p>
+        )}
       </div>
 
       <div className="flex justify-end pt-4">

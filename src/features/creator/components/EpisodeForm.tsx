@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 // Props definition for EpisodeForm
 type Props = {
@@ -33,8 +34,24 @@ export default function EpisodeForm({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { errors, validate } = useFormValidation<{
+    title: string;
+    sortOrder: string;
+  }>();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = validate(
+      { title, sortOrder },
+      {
+        title: (v) => (!v ? "Title is required" : null),
+        sortOrder: (v) => (!v ? "Sort order is required" : null),
+      }
+    );
+
+    if (!isValid) return;
+
     setIsSubmitting(true);
 
     // Depending on whether we're editing or creating, call the appropriate function with the form values
@@ -59,29 +76,35 @@ export default function EpisodeForm({
   // Form layout with inputs for title and sort order, and a submit button that shows loading state when submitting
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Title */}
       <div>
-        <label htmlFor="episode-title" className="text-sm text-gray-700">
-          Title
-        </label>
+        <label className="text-sm text-gray-700">Title</label>
         <input
-          id="episode-title"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg bg-white text-black ${
+            errors.title ? "border-red-500" : "border-gray-200"
+          }`}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        {errors.title && (
+          <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+        )}
       </div>
 
+      {/* Sort order */}
       <div>
-        <label htmlFor="episode-sort-order" className="text-sm text-gray-700">
-          Sort order
-        </label>
+        <label className="text-sm text-gray-700">Sort order</label>
         <input
-          id="episode-sort-order"
           type="number"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg bg-white text-black ${
+            errors.sortOrder ? "border-red-500" : "border-gray-200"
+          }`}
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         />
+        {errors.sortOrder && (
+          <p className="mt-1 text-sm text-red-500">{errors.sortOrder}</p>
+        )}
       </div>
 
       <div className="flex justify-end pt-4">

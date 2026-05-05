@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { LinkItem } from "../types";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 // Props definition for LinkForm component
 type Props = {
@@ -21,21 +22,34 @@ export default function LinkForm({
   onSubmit,
   submitLabel,
 }: Props) {
-  // Local state for link title
+    // Local state for link title
   const [title, setTitle] = useState(initialValues?.title ?? "");
-
-  // Local state for URL
+    // Local state for URL
   const [url, setUrl] = useState(initialValues?.url ?? "");
-
-  // Optional platform field (Patreon, YouTube, etc.)
+    // Optional platform field (Patreon, YouTube, etc.)
   const [platform, setPlatform] = useState(initialValues?.platform ?? "");
-
-  // Loading state while submitting
+    // Loading state while submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form submit handler
+    // Form submit handler
+  const { errors, validate } = useFormValidation<{
+    title: string;
+    url: string;
+  }>();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = validate(
+      { title, url },
+      {
+        title: (v) => (!v ? "Title is required" : null),
+        url: (v) => (!v ? "URL is required" : null),
+      }
+    );
+
+    if (!isValid) return;
+
     setIsSubmitting(true);
 
     try {
@@ -50,39 +64,44 @@ export default function LinkForm({
     }
   };
 
-  // Render the form with fields for title, URL, and platform, along with a submit button that shows loading state
+    // Render the form with fields for title, URL, and platform, along with a submit button that shows loading state
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="link-title" className="text-sm text-gray-700">
-          Title
-        </label>
+        <label className="text-sm text-gray-700">Title</label>
         <input
-          id="link-title"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg bg-white text-black ${
+            errors.title ? "border-red-500" : "border-gray-200"
+          }`}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        {errors.title && (
+          <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+        )}
       </div>
 
+      {/* Url */}
       <div>
-        <label htmlFor="link-url" className="text-sm text-gray-700">
-          URL
-        </label>
+        <label className="text-sm text-gray-700">URL</label>
         <input
-          id="link-url"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg bg-white text-black ${
+            errors.url ? "border-red-500" : "border-gray-200"
+          }`}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
+        {errors.url && (
+          <p className="mt-1 text-sm text-red-500">{errors.url}</p>
+        )}
       </div>
 
+      {/* Platform */}
       <div>
-        <label htmlFor="link-platform" className="text-sm text-gray-700">
+        <label className="text-sm text-gray-700">
           Platform (optional)
         </label>
         <input
-          id="link-platform"
           className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}

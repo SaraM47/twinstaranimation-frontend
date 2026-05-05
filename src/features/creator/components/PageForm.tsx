@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { PageItem } from "../types";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 // Props for PageForm component
 type Props = {
@@ -30,8 +31,24 @@ export default function PageForm({
   const [content, setContent] = useState(initialValues?.content ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { errors, validate } = useFormValidation<{
+    imageUrl: string;
+    pageNumber: string;
+  }>();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = validate(
+      { imageUrl, pageNumber },
+      {
+        imageUrl: (v) => (!v ? "Image URL is required" : null),
+        pageNumber: (v) => (!v ? "Page number is required" : null),
+      }
+    );
+
+    if (!isValid) return;
+
     setIsSubmitting(true);
 
     try {
@@ -47,7 +64,7 @@ export default function PageForm({
     }
   };
 
-  // Render the form with fields for title, image URL, page number, and optional content, along with a submit button that shows loading state when submitting
+    // Render the form with fields for title, image URL, page number, and optional content, along with a submit button that shows loading state when submitting
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
@@ -68,10 +85,15 @@ export default function PageForm({
         </label>
         <input
           id="page-image-url"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg bg-white text-black ${
+            errors.imageUrl ? "border-red-500" : "border-gray-200"
+          }`}
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
+        {errors.imageUrl && (
+          <p className="mt-1 text-sm text-red-500">{errors.imageUrl}</p>
+        )}
       </div>
 
       <div>
@@ -81,10 +103,15 @@ export default function PageForm({
         <input
           id="page-number"
           type="number"
-          className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg bg-white text-black"
+          className={`w-full mt-1 px-3 py-2 border rounded-lg bg-white text-black ${
+            errors.pageNumber ? "border-red-500" : "border-gray-200"
+          }`}
           value={pageNumber}
           onChange={(e) => setPageNumber(e.target.value)}
         />
+        {errors.pageNumber && (
+          <p className="mt-1 text-sm text-red-500">{errors.pageNumber}</p>
+        )}
       </div>
 
       <div>

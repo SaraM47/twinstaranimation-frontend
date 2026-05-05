@@ -4,6 +4,7 @@ import type {
   Product,
   UpdateProductDto,
 } from "../../products/types";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 // Props definition for ProductForm component
 type Props = {
@@ -26,8 +27,29 @@ export default function ProductForm({
   const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Validation logic using custom hook to validate form fields and display error messages if validation fails
+  const { errors, validate } = useFormValidation<{
+    title: string;
+    description: string;
+    price: string;
+    imageUrl: string;
+  }>();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = validate(
+      { title, description, price, imageUrl },
+      {
+        title: (v) => (!v ? "Title is required" : null),
+        description: (v) => (!v ? "Description is required" : null),
+        price: (v) => (!v ? "Price is required" : null),
+        imageUrl: (v) => (!v ? "Image URL is required" : null),
+      }
+    );
+
+    if (!isValid) return;
+
     setIsSubmitting(true);
 
     // Call the onSubmit function passed in props with the form values, converting price to a number
@@ -51,10 +73,15 @@ export default function ProductForm({
           Title
         </label>
         <input
-          className="w-full p-2 rounded border border-gray-300 bg-white text-black"
+          className={`w-full p-2 rounded border ${
+            errors.title ? "border-red-500" : "border-gray-300"
+          }`}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        {errors.title && (
+          <p className="text-sm text-red-500 mt-1">{errors.title}</p>
+        )}
       </div>
 
       <div>
@@ -62,10 +89,15 @@ export default function ProductForm({
           Description
         </label>
         <textarea
-          className="w-full p-2 rounded border border-gray-300 bg-white text-black"
+          className={`w-full p-2 rounded border ${
+            errors.description ? "border-red-500" : "border-gray-300"
+          }`}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        {errors.description && (
+          <p className="text-sm text-red-500 mt-1">{errors.description}</p>
+        )}
       </div>
 
       <div>
@@ -74,10 +106,15 @@ export default function ProductForm({
         </label>
         <input
           type="number"
-          className="w-full p-2 rounded border border-gray-300 bg-white text-black"
+          className={`w-full p-2 rounded border ${
+            errors.price ? "border-red-500" : "border-gray-300"
+          }`}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
+        {errors.price && (
+          <p className="text-sm text-red-500 mt-1">{errors.price}</p>
+        )}
       </div>
 
       <div>
@@ -85,10 +122,15 @@ export default function ProductForm({
           Image URL
         </label>
         <input
-          className="w-full p-2 rounded border border-gray-300 bg-white text-black"
+          className={`w-full p-2 rounded border ${
+            errors.imageUrl ? "border-red-500" : "border-gray-300"
+          }`}
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
+        {errors.imageUrl && (
+          <p className="text-sm text-red-500 mt-1">{errors.imageUrl}</p>
+        )}
       </div>
 
       <div className="flex justify-end pt-4">

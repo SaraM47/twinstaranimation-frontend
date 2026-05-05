@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import PublicHeader from "../../../components/layout/PublicHeader";
 import Footer from "../../../components/layout/Footer";
+import { XCircle } from "lucide-react";
 
 // Registration page for creating a new user account
 
@@ -15,79 +16,120 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
-  // Layout wrapper with header and footer
+  // Validation state
+  const [errors, setErrors] = useState<any>({});
+
+  const validate = () => {
+    const newErrors: any = {};
+
+    if (!form.firstName) newErrors.firstName = "First name is required";
+    if (!form.lastName) newErrors.lastName = "Last name is required";
+    if (!form.email) newErrors.email = "Email is required";
+    if (!form.password) newErrors.password = "Password is required";
+
+    if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       <PublicHeader purple />
 
-      <div className="flex-1 flex flex-col items-center justify-start pt-40 pb-32 px-4">
+      <div className="flex-1 flex flex-col items-center pt-40 pb-32 px-4">
         <div className="w-full max-w-md border border-white/30 rounded-xl p-10 space-y-8">
           <h1 className="font-heading text-3xl">Sign up</h1>
 
-          <form className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="text-sm">
-                  First name
-                </label>
-                <input
-                  id="firstName"
-                  className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
-                  onChange={(e) =>
-                    setForm({ ...form, firstName: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className="text-sm">
-                  Last name
-                </label>
-                <input
-                  id="lastName"
-                  className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
-                  onChange={(e) =>
-                    setForm({ ...form, lastName: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
+          <form
+            className="space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              validate();
+            }}
+          >
+            {/* First name */}
             <div>
-              <label htmlFor="email" className="text-sm">
-                Email
-              </label>
+              <label className="text-sm">First name</label>
               <input
-                id="email"
-                className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.firstName ? "border-red-500" : ""
+                }`}
+                onChange={(e) =>
+                  setForm({ ...form, firstName: e.target.value })
+                }
               />
+              {errors.firstName && (
+                <ErrorMsg msg={errors.firstName} />
+              )}
             </div>
 
+            {/* LAST NAME */}
             <div>
-              <label htmlFor="password" className="text-sm">
-                Password
-              </label>
+              <label className="text-sm">Last name</label>
               <input
-                id="password"
-                type="password"
-                className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.lastName ? "border-red-500" : ""
+                }`}
+                onChange={(e) =>
+                  setForm({ ...form, lastName: e.target.value })
+                }
               />
+              {errors.lastName && (
+                <ErrorMsg msg={errors.lastName} />
+              )}
             </div>
 
+            {/* Email */}
             <div>
-              <label htmlFor="confirmPassword" className="text-sm">
-                Confirm password
-              </label>
+              <label className="text-sm">Email</label>
               <input
-                id="confirmPassword"
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.email ? "border-red-500" : ""
+                }`}
+                onChange={(e) =>
+                  setForm({ ...form, email: e.target.value })
+                }
+              />
+              {errors.email && (
+                <ErrorMsg msg={errors.email} />
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-sm">Password</label>
+              <input
                 type="password"
-                className="w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black"
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.password ? "border-red-500" : ""
+                }`}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+              />
+              {errors.password && (
+                <ErrorMsg msg={errors.password} />
+              )}
+            </div>
+
+            {/* CONFIRM PASSWORD */}
+            <div>
+              <label className="text-sm">Confirm password</label>
+              <input
+                type="password"
+                className={`w-full px-4 py-3 rounded-md bg-[#D9D9D9] text-black border ${
+                  errors.confirmPassword ? "border-red-500" : ""
+                }`}
                 onChange={(e) =>
                   setForm({ ...form, confirmPassword: e.target.value })
                 }
               />
+              {errors.confirmPassword && (
+                <ErrorMsg msg={errors.confirmPassword} />
+              )}
             </div>
 
             <div className="pt-6 flex justify-center">
@@ -110,6 +152,16 @@ export default function RegisterPage() {
       </div>
 
       <Footer />
+    </div>
+  );
+}
+
+// Reusable error component (matches your UI design)
+function ErrorMsg({ msg }: { msg: string }) {
+  return (
+    <div className="flex items-center gap-2 text-red-500 mt-2 text-sm">
+      <XCircle size={16} />
+      <span>{msg}</span>
     </div>
   );
 }

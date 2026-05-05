@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { CreateSeriesDto, Series } from "../../series/types";
 import type { Product } from "../../products/types";
 import GenreSelector from "../../../components/ui/GenreSelector";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 // Props definition for SeriesForm component
 type Props = {
@@ -38,8 +39,27 @@ export default function SeriesForm({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Validation for required fields
+  const { errors, validate } = useFormValidation<{
+    title: string;
+    description: string;
+    coverImageUrl: string;
+  }>();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValid = validate(
+      { title, description, coverImageUrl },
+      {
+        title: (v) => (!v ? "Title is required" : null),
+        description: (v) => (!v ? "Description is required" : null),
+        coverImageUrl: (v) => (!v ? "Cover image URL is required" : null),
+      }
+    );
+
+    if (!isValid) return;
+
     setIsSubmitting(true);
 
     // Prepare the payload for submission, converting genres array to a comma-separated string and productId to a number if it's not empty. If editing, productId is not included in the payload.
@@ -65,10 +85,7 @@ export default function SeriesForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col max-h-[80vh]"
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh]">
       {/* Scroll container */}
       <div className="overflow-y-auto pr-2 space-y-5">
 
@@ -76,20 +93,26 @@ export default function SeriesForm({
         <div>
           <label className="block text-sm font-medium mb-1">Title</label>
           <input
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${
+              errors.title ? "border-red-500" : ""
+            }`}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+          {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
         </div>
 
         {/* Description */}
         <div>
           <label className="block text-sm font-medium mb-1">Description</label>
           <textarea
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${
+              errors.description ? "border-red-500" : ""
+            }`}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
         </div>
 
         {/* Cover img of the series */}
@@ -98,10 +121,13 @@ export default function SeriesForm({
             Cover Image URL
           </label>
           <input
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${
+              errors.coverImageUrl ? "border-red-500" : ""
+            }`}
             value={coverImageUrl}
             onChange={(e) => setCoverImageUrl(e.target.value)}
           />
+          {errors.coverImageUrl && <p className="text-sm text-red-500 mt-1">{errors.coverImageUrl}</p>}
         </div>
 
         {/* Authors */}
