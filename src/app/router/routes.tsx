@@ -39,32 +39,31 @@ import ProtectedRoute from "./guards/ProtectedRoute";
 import RoleRoute from "./guards/RoleRoute";
 
 export const router = createBrowserRouter([
-  // Auth
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-
-  // Public 
+  // All public routes wrapped in a common layout
   {
     path: "/",
     element: <PublicLayout />,
     children: [
+      // Home
       { index: true, element: <HomePage /> },
 
+      // Auth
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
+
+      // Shop
       { path: "products", element: <ProductsPage /> },
       { path: "products/:id", element: <ProductDetailsPage /> },
 
+      // Animation
       { path: "animation", element: <AnimationPage /> },
       { path: "animation/:id", element: <AnimationDetailsPage /> },
 
+      // Comics
       { path: "comics", element: <ComicsPage /> },
       { path: "comics/:id", element: <ComicDetailsPage /> },
 
+      // Support
       { path: "support", element: <SupportPage /> },
     ],
   },
