@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import PublicHeader from "./PublicHeader";
 import Footer from "./Footer";
-import CartPanel from "../cart/CartPanel";
+import CartPanel from "../../components/cart/CartPanel";
 
 // This layout is used for all public-facing pages (home, comics, products, etc.)
 export default function PublicLayout() {
