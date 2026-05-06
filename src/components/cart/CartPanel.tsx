@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 // Slide-in panel displaying cart items, quantity controls, and checkout
 
 export default function CartPanel() {
-    // Extract cart state and actions
+  // Extract cart state and actions
   const {
     items,
     isOpen,
@@ -20,12 +20,12 @@ export default function CartPanel() {
 
   const checkoutMutation = useCheckout();
 
-    // Navigate to product detail page
+  // Navigate to product detail page
   const goToProduct = (id: number) => {
     window.location.href = `/products/${id}`;
   };
 
-    // Trigger checkout process
+  // Trigger checkout process
   const handleCheckout = () => {
     if (items.length === 0 || checkoutMutation.isPending) return;
 
@@ -42,14 +42,14 @@ export default function CartPanel() {
       {/* Overlay (closes panel on click) */}
       <div
         onClick={close}
-        className={`fixed inset-0 bg-black/50 z-40 transition-all duration-500 ${
+        className={`fixed inset-0 bg-black/50 z-100 transition-all duration-500 ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       />
 
       {/* Slide-in panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-[420px] max-w-full bg-white z-50 flex flex-col
+        className={`fixed top-0 right-0 h-full w-[420px] max-w-full bg-white z-100 flex flex-col
           shadow-2xl transition-all duration-500 ease-out
           ${isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
       >
