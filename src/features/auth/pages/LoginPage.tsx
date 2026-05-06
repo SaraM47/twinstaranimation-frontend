@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../../api/client";
 import { useAuthStore } from "../store/auth.store";
 import PublicHeader from "../../../components/layout/PublicHeader";
-import Footer from "../../../components/layout/Footer";
 import { XCircle } from "lucide-react";
 
 // Login page with role-based redirect after authentication
@@ -147,7 +146,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

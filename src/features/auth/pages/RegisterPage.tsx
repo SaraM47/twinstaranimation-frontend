@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import PublicHeader from "../../../components/layout/PublicHeader";
-import Footer from "../../../components/layout/Footer";
 import { XCircle } from "lucide-react";
 
 // Registration page for creating a new user account
@@ -150,8 +149,6 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
