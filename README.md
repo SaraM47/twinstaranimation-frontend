@@ -10,7 +10,9 @@ The application communicates with the ASP.NET Core Web API backend through REST 
 
 This project was developed as part of a bachelor's thesis in Web Development and demonstrates how a modern React application can integrate with a .NET backend, SQL database and external services such as Stripe and YouTube.
 
----
+## Link to backend project repository
+
+Backend repository : [Link](https://github.com/SaraM47/Twinstartanimation-backend)
 
 ## Technologies
 
@@ -24,8 +26,6 @@ The frontend is built with:
 - Zustand
 - TanStack Query
 - Axios
-
----
 
 ## Main features
 
